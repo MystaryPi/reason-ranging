@@ -37,9 +37,10 @@ else:
         calendar_string = spice.timout(flyby_time, "MON DD,YYYY  HR:MN:SC.#### (TDB) ::TDB")
         state, lighttime = spice.spkezr('EUROPA', flyby_time, 'J2000', 'NONE', 'EUROPA CLIPPER')
         distance = spice.vnorm(state[:3])
-        
+
         print(f"Flyby {i+1}:")
         print(f"  Time to enter {distance:.0f} km: {calendar_string}")
+        print("State: " + str(state)) # position 1st 3, velocity last 3
         print("---")
 
 ####### BEST WORKING SCENARIOS #######
