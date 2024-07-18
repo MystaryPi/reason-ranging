@@ -72,7 +72,7 @@ else:
             cml = spice.dpr() * cml # degrees
             cml_total = np.append(cml_total, cml)
 
-        print(cml_total)
+        
 
 
 spice.kclear()
