@@ -36,8 +36,7 @@ good_flybys = [2, 17, 19, 21, 23, 27, 29, 31, 32, 40]
 
 ####### GROUND TRACKS < 100,000 km #######
 plotdir = 'ground_tracks/'
-hide_ground_tracks = False
-if spice.wncard(res) == 0 or hide_ground_tracks:
+if spice.wncard(res) == 0:
     print("No flybys found.")
 else:
     for i in range(1): #spice.wncard(res)
