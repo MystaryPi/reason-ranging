@@ -45,7 +45,7 @@ else:
         # Get start + end time for plot labels
         flyby_time = spice.wnfetd(res, i) # whole flyby time this time
         enter = spice.timout(flyby_time[0], "MON DD, YYYY HR:MN ::TDB")
-        exit = spice.timout(flyby_time[1], "MON DD, YYYY HR:MN ::TDB")
+        exitt = spice.timout(flyby_time[1], "MON DD, YYYY HR:MN ::TDB")
 
         # For each time (spaced apart by x points), gather lat/long
         times = np.linspace(flyby_time[0], flyby_time[1], 700)
