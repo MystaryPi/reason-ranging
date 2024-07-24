@@ -26,7 +26,7 @@ spice.wninsd(start_time, end_time, cnfine) # set time window to search
 res = spice.cell_double(2 * nintvls) # Spice cell to store output
 # Set LOCMIN - (in distance), refval = adjust = 0.0 in this case
 
-res = spice.gfdist('EUROPA', 'NONE', 'EUROPA CLIPPER', '<', 10000, 0.0, step_size, nintvls, cnfine)
+res = spice.gfdist('EUROPA', 'NONE', 'EUROPA CLIPPER', '<', 100000, 0.0, step_size, nintvls, cnfine)
 
 # Europa's radius
 radii = spice.bodvrd('EUROPA', 'RADII', 3)[1] # x, y, z
@@ -116,11 +116,11 @@ else:
 
         # prettify the axes
         ax.set_title("Flyby {}: {} to {}, \nwithin 100,000 km".format(str(i+1), enter, exitt), fontsize = 12)
-        ax.scatter(io_phase_total, cml_total, c='black')
+        ax.scatter(cml_total, io_phase_total, c='black')
         #ax.set_xlim(360, 0)
         #ax.set_ylim(-57, 57)
-        ax.set_ylabel(r'Central meridian longitude [$\degree$]', fontsize = 12)
-        ax.set_xlabel(r'Io phase [$\degree$]', fontsize = 12)
+        ax.set_xlabel(r'Central meridian longitude [$\degree$]', fontsize = 12)
+        ax.set_ylabel(r'Io phase [$\degree$]', fontsize = 12)
 
         import matplotlib.patches as patches
         # create rectangle patches for all of the regions

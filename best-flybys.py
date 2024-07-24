@@ -26,7 +26,7 @@ spice.wninsd(start_time, end_time, cnfine) # set time window to search
 res = spice.cell_double(2 * nintvls) # Spice cell to store output
 # Set LOCMIN - (in distance), refval = adjust = 0.0 in this case
 
-res = spice.gfdist('EUROPA', 'NONE', 'EUROPA CLIPPER', '<', 10000, 0.0, step_size, nintvls, cnfine)
+res = spice.gfdist('EUROPA', 'NONE', 'EUROPA CLIPPER', '<', 500000, 0.0, step_size, nintvls, cnfine)
 
 # Europa's radius
 radii = spice.bodvrd('EUROPA', 'RADII', 3)[1] # x, y, z
