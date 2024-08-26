@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt; plt.interactive(True)
 import matplotlib.colors as colors
 from matplotlib import cm
 import spiceypy as spice
+import scienceplots
 
 # Import the metakernel
 spice.furnsh("/Users/michpark/Sync/Documents/JPL-EUROPA/SPICE-Kernels/21F31v6.tm")
@@ -26,20 +27,20 @@ spice.wninsd(start_time, end_time, cnfine) # set time window to search
 res = spice.cell_double(2 * nintvls) # Spice cell to store output
 # Set LOCMIN - (in distance), refval = adjust = 0.0 in this case
 
-res = spice.gfdist('EUROPA', 'NONE', 'EUROPA CLIPPER', '<', 500000, 0.0, step_size, nintvls, cnfine)
+res = spice.gfdist('EUROPA', 'NONE', 'EUROPA CLIPPER', '<', 100000, 0.0, step_size, nintvls, cnfine)
 
 # Europa's radius
 radii = spice.bodvrd('EUROPA', 'RADII', 3)[1] # x, y, z
 img = plt.imread("europa.jpg")
 
-good_flybys = [2, 17, 19, 21, 23, 27, 29, 31, 32, 40]
+good_flybys = [1, 16, 18] # i -1 
 
 ####### GROUND TRACKS < 100,000 km #######
-plotdir = 'ground_tracks/'
+plotdir = '/Users/michpark/Sync/Documents/JPL-EUROPA/Slide Figures/'
 if spice.wncard(res) == 0:
     print("No flybys found.")
 else:
-    for i in range(1): #spice.wncard(res)
+    for i in good_flybys: #spice.wncard(res)
         print(i+1)
         # Get start + end time for plot labels
         flyby_time = spice.wnfetd(res, i) # whole flyby time this time
@@ -65,15 +66,16 @@ else:
             alt_total = np.append(alt_total, np.sqrt(np.sum((alt-radii)**2)))
     
         # SAVE FILES in ground_tracks directory
+        plt.style.use(['science', 'notebook'])
         filename = "flyby_{}.pdf".format(i+1)
         fig, ax = plt.subplots(figsize=(36,30))
 
         # prettify the axes
-        ax.set_title("Flyby {}: {} to {}, within 100,000 km".format(str(i+1), enter, exit), fontsize = 15)
+        ax.set_title("Flyby {}: {} to {}, within 100,000 km".format(str(i+1), enter, exit))
         ax.set_xlim(360, 0)
         ax.set_ylim(-57, 57)
-        ax.set_xlabel(r'Longitude [$\degree$W]', fontsize = 12)
-        ax.set_ylabel(r'Latitude [$\degree$]', fontsize = 12)
+        ax.set_xlabel(r'Longitude [°W]')
+        ax.set_ylabel(r'Latitude [°]')
 
         # leading subjovian = 270-360 E == 90-0 W
         import matplotlib.patches as patches
