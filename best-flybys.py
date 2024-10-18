@@ -33,7 +33,7 @@ res = spice.gfdist('EUROPA', 'NONE', 'EUROPA CLIPPER', '<', 100000, 0.0, step_si
 radii = spice.bodvrd('EUROPA', 'RADII', 3)[1] # x, y, z
 img = plt.imread("europa.jpg")
 
-good_flybys = [1, 16, 18] # i -1 
+good_flybys = [1] # i -1  [1,16,18]
 
 ####### GROUND TRACKS < 100,000 km #######
 plotdir = '/Users/michpark/Sync/Documents/JPL-EUROPA/Slide Figures/'
@@ -47,8 +47,12 @@ else:
         enter = spice.timout(flyby_time[0], "MON DD, YYYY HR:MN ::TDB")
         exit = spice.timout(flyby_time[1], "MON DD, YYYY HR:MN ::TDB")
 
+        et_ca = ((flyby_time[1] - flyby_time[0]) / 2) + flyby_time[0]
+        # finding closest approach
+
         # For each time (spaced apart by x points), gather lat/long
-        times = np.linspace(flyby_time[0], flyby_time[1], 700)
+        #times = np.linspace(flyby_time[0], flyby_time[1], 700)
+        times = np.linspace(et_ca - 28*3600, et_ca + 28*3600, 700)
         lat_total = np.array([])
         long_total = np.array([])
         alt_total = np.array([])
@@ -64,10 +68,17 @@ else:
             lat_total = np.append(lat_total, lat_deg)
             long_total = np.append(long_total, 360-((lon_deg+360)%360)) #convert to 0-360 W scale
             alt_total = np.append(alt_total, np.sqrt(np.sum((alt-radii)**2)))
+
+        print("##### Flyby " + str(i+1) + " #####")
+        print("START: " + enter)
+        print("END: " + exit)
+        print("Altitude: ", alt_total)
     
         # SAVE FILES in ground_tracks directory
+        '''
         plt.style.use(['science', 'notebook'])
         filename = "flyby_{}.pdf".format(i+1)
+        
         fig, ax = plt.subplots(figsize=(36,30))
 
         # prettify the axes
@@ -93,6 +104,7 @@ else:
         
         fig.savefig(plotdir+filename, bbox_inches='tight', dpi=600)
         plt.close()
+        '''
 
 ####### BEST WORKING SCENARIOS #######
 '''
