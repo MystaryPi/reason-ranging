@@ -56,6 +56,7 @@ else:
         lat_total = np.array([])
         long_total = np.array([])
         alt_total = np.array([])
+        v_total = np.array([])
 
         for t in times:
             state, _ = spice.spkezr('EUROPA CLIPPER', t, 'J2000', 'NONE', 'EUROPA')
@@ -68,11 +69,13 @@ else:
             lat_total = np.append(lat_total, lat_deg)
             long_total = np.append(long_total, 360-((lon_deg+360)%360)) #convert to 0-360 W scale
             alt_total = np.append(alt_total, np.sqrt(np.sum((alt-radii)**2)))
+            v_total = np.append(v_total, np.sqrt(np.sum(state[:3])**2))
 
         print("##### Flyby " + str(i+1) + " #####")
         print("START: " + enter)
         print("END: " + exit)
         print("Altitude: ", alt_total)
+        print("Velocities: ", v_total)
     
         # SAVE FILES in ground_tracks directory
         '''
