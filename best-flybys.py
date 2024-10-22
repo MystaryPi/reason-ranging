@@ -69,7 +69,7 @@ else:
             lat_total = np.append(lat_total, lat_deg)
             long_total = np.append(long_total, 360-((lon_deg+360)%360)) #convert to 0-360 W scale
             alt_total = np.append(alt_total, np.sqrt(np.sum((alt-radii)**2)))
-            v_total = np.append(v_total, np.sqrt(np.sum(state[:3])**2))
+            v_total = np.append(v_total, np.sqrt(np.sum(state[3:])**2))
 
         print("##### Flyby " + str(i+1) + " #####")
         print("START: " + enter)
