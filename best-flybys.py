@@ -71,11 +71,16 @@ else:
             alt_total = np.append(alt_total, np.sqrt(np.sum((alt-radii)**2)))
             v_total = np.append(v_total, np.sqrt(np.sum(state[3:]**2)))
 
+        # Determine change in velocity (for limitation on max. # pulses)
+        # t = np.linspace(-28, 28, 700)
+        # np.diff(v_total)/np.diff(t)
+        # mid = (t[:-1] + t[1:]) / 2
+
         print("##### Flyby " + str(i+1) + " #####")
         print("START: " + enter)
         print("END: " + exit)
-        print("Altitude: ", alt_total)
-        print("Velocities: ", v_total)
+        #print("Altitude: ", alt_total)
+        #print("Velocities: ", v_total)
     
         # SAVE FILES in ground_tracks directory
         '''
