@@ -59,7 +59,7 @@ else:
         v_total = np.array([])
 
         for t in times:
-            state, _ = spice.spkezr('EUROPA CLIPPER', t, 'J2000', 'NONE', 'EUROPA')
+            state, _ = spice.spkezr('EUROPA CLIPPER', t, 'IAU_EUROPA', 'NONE', 'EUROPA')
             intersect, _,  alt = spice.subpnt('NEAR POINT/ELLIPSOID', 'EUROPA', t, 'IAU_EUROPA', 'NONE', 'EUROPA CLIPPER')
             r, lon, lat = spice.reclat(intersect) # rect. coords (radians)
             lon_deg = spice.dpr() * lon # degrees
@@ -69,12 +69,21 @@ else:
             lat_total = np.append(lat_total, lat_deg)
             long_total = np.append(long_total, 360-((lon_deg+360)%360)) #convert to 0-360 W scale
             alt_total = np.append(alt_total, np.sqrt(np.sum((alt-radii)**2)))
-            v_total = np.append(v_total, np.sqrt(np.sum(state[3:]**2)))
+            v_total = np.append(v_total, spice.vnorm(state[3:]))
 
+        # fundamental limit
+        # Given the velocity changes you calculated, at what altitude is 
+        # the time by which the measurement becomes inaccurate the same as the round trip time? 
         # Determine change in velocity (for limitation on max. # pulses)
-        # t = np.linspace(-28, 28, 700)
-        # np.diff(v_total)/np.diff(t)
-        # mid = (t[:-1] + t[1:]) / 2
+        t = np.linspace(-28, 28, 700)
+        min_v_ch = -0.5e3
+        max_v_ch = 0.5e3
+        # assume within 10 h
+        variation = (max_v_ch - min_v_ch)/(30*60*60)
+        time_inacc = 0.05/variation
+        print("{} seconds until velocity measurement becomes inaccurate".format(time_inacc))
+        alt_limit = time_inacc*2.998e8/2
+        print("Altitude limit: {} km".format(alt_limit/1e3))
 
         print("##### Flyby " + str(i+1) + " #####")
         print("START: " + enter)
