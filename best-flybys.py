@@ -69,27 +69,36 @@ else:
             lat_total = np.append(lat_total, lat_deg)
             long_total = np.append(long_total, 360-((lon_deg+360)%360)) #convert to 0-360 W scale
             alt_total = np.append(alt_total, np.sqrt(np.sum((alt-radii)**2)))
-            v_total = np.append(v_total, spice.vnorm(state[3:]))
+
+            # Find the RADIAL VELOCITY
+            #v_total = np.append(v_total, spice.vnorm(state[3:]))
+            pos = state[0:3]/spice.vnorm(state[0:3])
+            radial_v = spice.vdot(state[3:],pos)
+            #trans_v = np.sqrt(spice.vnorm(state[3:])**2-radial_v**2)
+            v_total = np.append(v_total, radial_v) # RADIAL VELOCITY
 
         '''
         plt.figure()
         t = np.linspace(-28, 28, 56*3600)
+        plt.plot(t, v_total)
+        plt.xlabel("Hours from closest approach")
+        plt.ylabel("Radial Velocity (km/s)")
+        
+        plt.figure()
+        t = np.linspace(-28, 28, 56*3600-1)
         plt.plot(t, np.diff(v_total))
         plt.xlabel("Hours from closest approach")
-        plt.ylabel("Difference in velocity (km/s)")
-        stop
+        plt.ylabel("Difference in Radial Velocity (km/s^2)")
         '''
 
         # fundamental limit
         # Given the velocity changes you calculated, at what altitude is 
         # the time by which the measurement becomes inaccurate the same as the round trip time? 
         # Determine change in velocity (for limitation on max. # pulses)
-        t = np.linspace(-28, 28, 700)
-        min_v_ch = -0.0002
-        max_v_ch = 0.0002e3
-        # assume within 10 h
-        variation = 1000*(max_v_ch - min_v_ch)/(30*60*60) # m/s
-        time_inacc = 0.05/variation # using velocity res = 0.05 m/s
+        #t = np.linspace(-28, 28, 700)
+        v_ch = 0.0001e3 # km/s^2
+        # assume within 28 hs
+        time_inacc = 0.05/v_ch # using velocity res = 0.05 m/s
         print("{} seconds until velocity measurement becomes inaccurate".format(time_inacc))
         alt_limit = time_inacc*2.998e8/2
         print("Altitude limit: {} km".format(alt_limit/1e3))
