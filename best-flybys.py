@@ -9,6 +9,7 @@ import matplotlib.colors as colors
 from matplotlib import cm
 import spiceypy as spice
 import scienceplots
+plt.interactive(True)
 
 # Import the metakernel
 spice.furnsh("/Users/michpark/Sync/Documents/JPL-EUROPA/SPICE-Kernels/21F31v6.tm")
@@ -33,19 +34,25 @@ res = spice.gfdist('EUROPA', 'NONE', 'EUROPA CLIPPER', '<', 100000, 0.0, step_si
 radii = spice.bodvrd('EUROPA', 'RADII', 3)[1] # x, y, z
 img = plt.imread("europa.jpg")
 
-good_flybys = [1] # i -1  [1,16,18]
+good_flybys = [1,43,23] # i -1  [1,16,18]
+
+# SAVE FILES in ground_tracks directory
+plt.style.use(['science', 'no-latex'])
+filename = "figs/flybys-paper.pdf"
+fig, ax = plt.subplots(3,1,figsize=(8,7))
 
 ####### GROUND TRACKS < 100,000 km #######
 plotdir = '/Users/michpark/Sync/Documents/JPL-EUROPA/Slide Figures/'
 if spice.wncard(res) == 0:
     print("No flybys found.")
 else:
+    index = 0
     for i in good_flybys: #spice.wncard(res)
         print(i+1)
         # Get start + end time for plot labels
         flyby_time = spice.wnfetd(res, i) # whole flyby time this time
         enter = spice.timout(flyby_time[0], "MON DD, YYYY HR:MN ::TDB")
-        exit = spice.timout(flyby_time[1], "MON DD, YYYY HR:MN ::TDB")
+        exitt = spice.timout(flyby_time[1], "MON DD, YYYY HR:MN ::TDB")
 
         et_ca = ((flyby_time[1] - flyby_time[0]) / 2) + flyby_time[0]
         # finding closest approach
@@ -96,6 +103,7 @@ else:
         # the time by which the measurement becomes inaccurate the same as the round trip time? 
         # Determine change in velocity (for limitation on max. # pulses)
         #t = np.linspace(-28, 28, 700)
+        '''
         v_ch = 0.0001e3 # km/s^2
         # assume within 28 hs
         time_inacc = 0.05/v_ch # using velocity res = 0.05 m/s
@@ -108,38 +116,33 @@ else:
         print("END: " + exit)
         #print("Altitude: ", alt_total)
         #print("Velocities: ", v_total)
-    
-        # SAVE FILES in ground_tracks directory
         '''
-        plt.style.use(['science', 'notebook'])
-        filename = "flyby_{}.pdf".format(i+1)
         
-        fig, ax = plt.subplots(figsize=(36,30))
-
-        # prettify the axes
-        ax.set_title("Flyby {}: {} to {}, within 100,000 km".format(str(i+1), enter, exit))
-        ax.set_xlim(360, 0)
-        ax.set_ylim(-57, 57)
-        ax.set_xlabel(r'Longitude [°W]')
-        ax.set_ylabel(r'Latitude [°]')
+        ax[index].set_title("Flyby {}: {} - {}".format(str(i+1), enter, exitt[-5:]),fontsize=14.5)
+        ax[index].set_xlim(360, 0)
+        ax[index].set_ylim(-57, 57)
+        ax[2].set_xlabel(f'Longitude [$\degree$W]',fontsize=14.5)
+        ax[index].set_ylabel(f'Latitude [$\degree$]',fontsize=14.5)
+        ax[index].tick_params(axis='both', which='major', labelsize=14)
 
         # leading subjovian = 270-360 E == 90-0 W
         import matplotlib.patches as patches
         # Create a Rectangle patch
         rect = patches.Rectangle((0, -57), 90, 114, linewidth=4, edgecolor='#314173', facecolor='none')
-        ax.add_patch(rect) 
-        plt.tight_layout()
+        ax[index].add_patch(rect) 
 
         # colorbar with altitude
         # plot flybys, with colorbar for altitude
-        axs = ax.scatter(long_total, lat_total, s=9, c=alt_total, cmap='inferno', vmin=0, vmax=100000)
-        axp = ax.imshow(img, extent=[360, 0, -57, 57])
-        clb = plt.colorbar(axs, ax=ax, shrink=0.14, pad=0.01, aspect=30)
-        clb.set_label('Altitude (km)', rotation=270, labelpad=15)
+        axs = ax[index].scatter(long_total, lat_total, s=13, c=alt_total, cmap='inferno', vmin=0, vmax=100000)
+        axp = ax[index].imshow(img, extent=[360, 0, -57, 57])
+        clb = fig.colorbar(axs, ax=ax[index],shrink=0.9,pad=0.01,aspect=13) #, shrink=0.5, pad=0.01, aspect=13
+        clb.set_label('Altitude (km)', rotation=270, labelpad=15,size=14)
+        index+=1
         
-        fig.savefig(plotdir+filename, bbox_inches='tight', dpi=600)
-        plt.close()
-        '''
+        fig.tight_layout()
+        plt.show()
+        fig.savefig(filename)
+    
 
 ####### BEST WORKING SCENARIOS #######
 '''

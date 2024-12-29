@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt; plt.interactive(True)
 import matplotlib.colors as colors
 from matplotlib import cm
 import spiceypy as spice
+import scienceplots
 
 # Import the metakernel
 spice.furnsh("/Users/michpark/Sync/Documents/JPL-EUROPA/SPICE-Kernels/21F31v6.tm")
@@ -59,11 +60,15 @@ def calc_orbphase(obs_v, targ_v):
     return phase_diff
 
 ####### GROUND TRACKS < 100,000 km #######
-plotdir = 'jovian_bursts/'
+filename = "figs/jovian-flyby-paper.pdf"
+plt.style.use(['science', 'no-latex'])
+fig, ax = plt.subplots(1,2,figsize=(8,4))
+
 if spice.wncard(res) == 0:
     print("No flybys found.")
 else:
-    for i in range(spice.wncard(res)): #spice.wncard(res)
+    index = 0
+    for i in [1, 22]: #spice.wncard(res)
         print(i+1)
         # Get start + end time for plot labels
         flyby_time = spice.wnfetd(res, i) # whole flyby time this time
@@ -109,46 +114,44 @@ else:
             orbphase0=calc_orbphase(vplanet_obs,vplanet_targ)        
             
             io_phase_total = np.append(io_phase_total, (orbphase0+360)%360)
-
+            
         # plot CML vs Io phase
-        filename = "jovian-flyby_{}.pdf".format(i+1)
-        fig, ax = plt.subplots(figsize=(6,6))
+        ax[index].set_title("Flyby {}: {} - {}".format(str(i+1), enter, exitt[-5:]),fontsize=14.5)
+        ax[index].scatter(cml_total, io_phase_total, c='black',s=15)
+        
+        ax[index].set_xlabel(f'Central meridian longitude [$\degree$]',fontsize=14.5)
+        ax[0].set_ylabel(f'Io phase [$\degree$]',fontsize=14.5)
 
-        # prettify the axes
-        ax.set_title("Flyby {}: {} to {}, \nwithin 100,000 km".format(str(i+1), enter, exitt), fontsize = 12)
-        ax.scatter(cml_total, io_phase_total, c='black')
-        #ax.set_xlim(360, 0)
-        #ax.set_ylim(-57, 57)
-        ax.set_xlabel(r'Central meridian longitude [$\degree$]', fontsize = 12)
-        ax.set_ylabel(r'Io phase [$\degree$]', fontsize = 12)
+        ax[index].tick_params(axis='both', which='major', labelsize=14)
 
         import matplotlib.patches as patches
         # create rectangle patches for all of the regions
         rectangles = {'Io-A' : patches.Rectangle((185, 185), 90, 80, linewidth=4, edgecolor='#ac2941', facecolor='#ac2941', alpha=0.5),
-              "Io-A'" : patches.Rectangle((200,160), 65, 35, linewidth=4, edgecolor='#de4a6a', facecolor='#de4a6a', alpha=0.5),
-              "Io-A''" : patches.Rectangle((300,220), 45, 25, linewidth=4, edgecolor='#bd314a', facecolor='#bd314a', alpha=0.5),
-              "Io-B" : patches.Rectangle((75,55), 125, 60, linewidth=4, edgecolor='#205283', facecolor='#205283', alpha=0.5),
-              "Io-B'" : patches.Rectangle((130,65), 55, 30, linewidth=4, edgecolor='#83cde6', facecolor='#83cde6', alpha=0.5),
-              "Io-C" : patches.Rectangle((270,215), 90, 45, linewidth=4, edgecolor='#ee5a31', facecolor='#ee5a31', alpha=0.5),
-              "" : patches.Rectangle((0,215), 45, 45, linewidth=4, edgecolor='#ee5a31', facecolor='#ee5a31', alpha=0.5),
-              "Io-D" : patches.Rectangle((20, 95), 210, 30, linewidth=4, edgecolor='#624a73', facecolor='#624a73', alpha=0.5)}
+                "Io-A'" : patches.Rectangle((200,160), 65, 35, linewidth=4, edgecolor='#de4a6a', facecolor='#de4a6a', alpha=0.5),
+                "Io-A''" : patches.Rectangle((300,220), 45, 25, linewidth=4, edgecolor='#bd314a', facecolor='#bd314a', alpha=0.5),
+                "Io-B" : patches.Rectangle((75,55), 125, 60, linewidth=4, edgecolor='#205283', facecolor='#205283', alpha=0.5),
+                "Io-B'" : patches.Rectangle((130,65), 55, 30, linewidth=4, edgecolor='#83cde6', facecolor='#83cde6', alpha=0.5),
+                "Io-C" : patches.Rectangle((270,215), 90, 45, linewidth=4, edgecolor='#ee5a31', facecolor='#ee5a31', alpha=0.5),
+                "" : patches.Rectangle((0,215), 45, 45, linewidth=4, edgecolor='#ee5a31', facecolor='#ee5a31', alpha=0.5),
+                "Io-D" : patches.Rectangle((20, 95), 210, 30, linewidth=4, edgecolor='#624a73', facecolor='#624a73', alpha=0.5)}
 
         for r in rectangles:
-            ax.add_artist(rectangles[r])    
+            ax[index].add_artist(rectangles[r])    
             rx, ry = rectangles[r].get_xy()
             cx = rx + rectangles[r].get_width()/2.0
             cy = ry + rectangles[r].get_height()/2.0
 
-            ax.annotate(r, (cx, cy), color='w', weight='bold', 
-                        fontsize=10, ha='center', va='center')
-        
-        plt.grid()
-        #plt.tight_layout()
-        ax.set_xlim((0, 360))
-        ax.set_ylim((0, 360))
-        #plt.show()
-        fig.savefig(plotdir+filename, bbox_inches='tight', dpi=600)
-        plt.close()
+            ax[index].annotate(r, (cx, cy), color='w', weight='bold', 
+                        fontsize=12, ha='center', va='center',usetex=False)
+        ax[index].set_xlim((0, 360))
+        ax[index].set_ylim((0, 360))
+        ax[index].grid(True, alpha=0.2)
+        index += 1
+
+fig.tight_layout()
+plt.show()
+fig.savefig(filename)
+#plt.close()
 
 
 
