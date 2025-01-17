@@ -68,7 +68,7 @@ if spice.wncard(res) == 0:
     print("No flybys found.")
 else:
     index = 0
-    for i in [1, 22]: #spice.wncard(res)
+    for i in [1, 23]: #spice.wncard(res)
         print(i+1)
         # Get start + end time for plot labels
         flyby_time = spice.wnfetd(res, i) # whole flyby time this time
