@@ -34,7 +34,7 @@ res = spice.gfdist('EUROPA', 'NONE', 'EUROPA CLIPPER', '<', 100000, 0.0, step_si
 radii = spice.bodvrd('EUROPA', 'RADII', 3)[1] # x, y, z
 img = plt.imread("europa.jpg")
 
-good_flybys = [1,43,23] # i -1  [1,16,18]
+good_flybys = [23] # i -1  [1,16,18]; [1,43,23] for paper
 
 # SAVE FILES in ground_tracks directory
 plt.style.use(['science', 'no-latex'])
@@ -64,6 +64,8 @@ else:
         long_total = np.array([])
         alt_total = np.array([])
         v_total = np.array([])
+
+        stop
 
         for t in times:
             state, _ = spice.spkezr('EUROPA CLIPPER', t, 'IAU_EUROPA', 'NONE', 'EUROPA')
@@ -141,7 +143,7 @@ else:
         
         fig.tight_layout()
         plt.show()
-        fig.savefig(filename)
+        #fig.savefig(filename)
     
 
 ####### BEST WORKING SCENARIOS #######
